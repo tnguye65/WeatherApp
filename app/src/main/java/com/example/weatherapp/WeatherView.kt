@@ -10,13 +10,24 @@ class WeatherView() {
 
     fun displayCurrentWeather(lat: Double, lon: Double, callback: (String) -> Unit) {
         model.getCurrentWeather(lat, lon) { weatherData ->
-            val weatherInfo =
-                "City: ${weatherData.name}\n" +
-                        "Country: ${weatherData.sys?.country}\n" +
-                        "Weather: ${weatherData.weather?.get(0)?.main}\n" +
-                        "Description: ${weatherData.weather?.get(0)?.description}\n" +
-                        "Temperature: ${weatherData.main?.temp}°F" // Fahrenheit for now
-            callback(weatherInfo)
+            val mainData = weatherData.main
+            val weatherDesc = weatherData.weather?.get(0)
+            val city = weatherData.name ?: "Unknown"
+            val country = weatherData.sys?.country ?: "N/A"
+            val temp = mainData?.temp
+            val feelsLike = mainData?.feelsLike
+            val humidity = mainData?.humidity
+            val wMain = weatherDesc?.main
+            val wDescription = weatherDesc?.description
+            val sb = StringBuilder()
+            sb.append("City: $city\n")
+            sb.append("Country: $country\n")
+            sb.append("Weather: $wMain\n")
+            sb.append("Description: $wDescription\n")
+            if (temp != null) sb.append("Temperature: $temp°F\n")
+            if (feelsLike != null) sb.append("Feels Like: $feelsLike°F\n")
+            if (humidity != null) sb.append("Humidity: $humidity%\n")
+            callback(sb.toString())
         }
     }
 }

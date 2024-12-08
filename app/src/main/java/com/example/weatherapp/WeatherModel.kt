@@ -17,7 +17,6 @@ class WeatherModel(private val context: Context, private val api : ApiService) {
         key = value
         units = "imperial"
     }
-
     fun getCurrentWeather(lat: Double, lon: Double, callback: (WeatherData) -> Unit) {
         val call = api.getCurrentWeather(lat, lon, key, units)
         call.enqueue(object : retrofit2.Callback<WeatherData> {
@@ -25,11 +24,9 @@ class WeatherModel(private val context: Context, private val api : ApiService) {
                 if (response.isSuccessful && response.body() != null) {
                     callback(response.body()!!)
                 } else {
-                    // Unsuccessful responses
                     Toast.makeText(context, "Error: ${response.code()}", Toast.LENGTH_LONG).show()
                 }
             }
-
             override fun onFailure(call: Call<WeatherData>, t: Throwable) {
                 Toast.makeText(context, "Failed to load weather: ${t.message}", Toast.LENGTH_LONG).show()
             }

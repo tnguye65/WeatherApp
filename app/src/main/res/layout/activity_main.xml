@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -8,13 +9,44 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/weatherInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/weatherInfo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Weather loading..."
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/settingsButton"
+        android:text="Settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/weatherInfo"
+        app:layout_constraintStart_toStartOf="@id/weatherInfo"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/historyButton"
+        android:text="View History"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/settingsButton"
+        app:layout_constraintStart_toStartOf="@id/settingsButton"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/fakeAd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sponsored Ad: Upgrade to Premium!"
+        android:background="#FFEFD5"
+        android:textColor="#000000"
+        android:gravity="center"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,7 +19,8 @@ data class Coord(
 
 data class Main(
     @SerializedName("temp") val temp: Double?,
-    @SerializedName("feels_like") val feelsLike: Double?
+    @SerializedName("feels_like") val feelsLike: Double?,
+    @SerializedName("humidity") val humidity: Int?
 )
 
 data class Weather(
@@ -30,4 +31,3 @@ data class Weather(
 data class Sys(
     @SerializedName("country") val country: String?,
 )
-
