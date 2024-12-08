@@ -8,6 +8,21 @@ class WeatherView() {
         model = WeatherModel(context, ApiClient().getClient().create(ApiService::class.java))
     }
 
+    fun getModel() : WeatherModel{
+        return model
+    }
+
+    fun getUnitAbbreviation() : String {
+        val unit = model.getUnits()
+        if (unit == "metric") {
+            return "°C"
+        } else if (unit == "standard") {
+            return "K"
+        } else {
+            return "°F"
+        }
+    }
+
     fun displayCurrentWeather(lat: Double, lon: Double, callback: (String) -> Unit) {
         model.getCurrentWeather(lat, lon) { weatherData ->
             val mainData = weatherData.main
@@ -24,8 +39,8 @@ class WeatherView() {
             sb.append("Country: $country\n")
             sb.append("Weather: $wMain\n")
             sb.append("Description: $wDescription\n")
-            if (temp != null) sb.append("Temperature: $temp°F\n")
-            if (feelsLike != null) sb.append("Feels Like: $feelsLike°F\n")
+            if (temp != null) sb.append("Temperature: $temp${getUnitAbbreviation()}\n")
+            if (feelsLike != null) sb.append("Feels Like: $feelsLike${getUnitAbbreviation()}\n")
             if (humidity != null) sb.append("Humidity: $humidity%\n")
             callback(sb.toString())
         }

@@ -20,19 +20,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var historyButton: Button
     private var lat: Double = 35.0
     private var lon: Double = 139.0
+    private lateinit var unit: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-        val colorStr = prefs.getString("themeColor", "White")
-        val color = when(colorStr) {
-            "Cyan" -> Color.CYAN
-            "Yellow" -> Color.YELLOW
-            "LightGray" -> Color.LTGRAY
-            else -> Color.WHITE
-        }
-        window.decorView.setBackgroundColor(color)
         setContentView(R.layout.activity_main)
+        loadPreferences()
         textView = findViewById(R.id.weatherInfo)
         settingsButton = findViewById(R.id.settingsButton)
         historyButton = findViewById(R.id.historyButton)
@@ -52,13 +45,33 @@ class MainActivity : AppCompatActivity() {
             getLocationAndLoadWeather()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        loadPreferences()
+    }
+
+    private fun loadPreferences() {
+        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val colorStr = prefs.getString("themeColor", "White")
+        unit = prefs.getString("temperatureUnit", "fahrenheit").toString()
+        val color = when(colorStr) {
+            "Cyan" -> Color.CYAN
+            "Yellow" -> Color.YELLOW
+            "LightGray" -> Color.LTGRAY
+            else -> Color.WHITE
+        }
+        window.decorView.setBackgroundColor(color)
+        loadWeather(unit)
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == 123) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocationAndLoadWeather()
             } else {
                 Toast.makeText(this, "Location permission denied. Using default coords.", Toast.LENGTH_SHORT).show()
-                loadWeather()
+                loadWeather(unit)
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -76,10 +89,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "No last known location, using default coords.", Toast.LENGTH_SHORT).show()
             }
         }
-        loadWeather()
+        loadWeather(unit)
     }
-    private fun loadWeather() {
+    private fun loadWeather(unit: String) {
         val weatherView = WeatherView(this)
+        weatherView.getModel().setUnits(unit)
         weatherView.displayCurrentWeather(lat, lon) { weatherInfo ->
             runOnUiThread {
                 textView.text = weatherInfo

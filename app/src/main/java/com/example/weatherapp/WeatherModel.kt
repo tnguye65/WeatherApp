@@ -8,7 +8,7 @@ import retrofit2.Call
 
 class WeatherModel(private val context: Context, private val api : ApiService) {
     private val key : String
-    private val units : String
+    private var units : String
 
     init {
         val ai: ApplicationInfo = context.applicationContext.packageManager
@@ -17,6 +17,22 @@ class WeatherModel(private val context: Context, private val api : ApiService) {
         key = value
         units = "imperial"
     }
+
+    fun getUnits() : String {
+        return units
+    }
+
+    // Invalid string will default to imperial (°F)
+    fun setUnits(unit: String?) {
+        if (unit == "celsius") {
+            units = "metric"
+        } else if (unit == "kelvin") {
+            units = "standard"
+        } else {
+            units = "imperial"
+        }
+    }
+
     fun getCurrentWeather(lat: Double, lon: Double, callback: (WeatherData) -> Unit) {
         val call = api.getCurrentWeather(lat, lon, key, units)
         call.enqueue(object : retrofit2.Callback<WeatherData> {
