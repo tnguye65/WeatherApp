@@ -53,15 +53,24 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadPreferences()
-        if (hasLocationPermissions()) {
-            getCurrentLocation()
-        }
+        loadWeather(unit)
     }
 
     private fun loadPreferences() {
         val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
         val colorStr = prefs.getString("themeColor", "White")
         unit = prefs.getString("temperatureUnit", "fahrenheit").toString()
+
+        // Load saved coordinates if they exist
+        val savedLat = prefs.getFloat("saved_lat", Float.MIN_VALUE)
+        val savedLon = prefs.getFloat("saved_lon", Float.MIN_VALUE)
+
+        if (savedLat != Float.MIN_VALUE && savedLon != Float.MIN_VALUE) {
+            lat = savedLat.toDouble()
+            lon = savedLon.toDouble()
+            loadWeather(unit)
+        }
+
         val color = when(colorStr) {
             "Cyan" -> Color.CYAN
             "Yellow" -> Color.YELLOW
