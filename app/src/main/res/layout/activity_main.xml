@@ -1,61 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/morning"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/weatherInfo"
+        android:id="@+id/city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Weather loading..."
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_centerHorizontal="true"
+        android:text="City"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp"/>
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/weatherIcon"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/blank"/>
+
+    <TextView
+        android:id="@+id/temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/city"
+        android:text="Temperature"
+        android:textSize="50dp"
+        android:textColor="@color/white"
+        android:layout_marginTop="150dp"/>
+
+    <TextView
+        android:id="@+id/weather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/temperature"
+        android:text="Weather"
+        android:textSize="30dp"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/weatherDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/weather"
+        android:text="Weather Description"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"/>
 
     <Button
         android:id="@+id/searchButton"
-        android:text="Search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/weatherInfo"
-        app:layout_constraintStart_toStartOf="@id/weatherInfo"
-        android:layout_marginTop="16dp"/>
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/weather"
+        android:layout_toLeftOf="@id/settingsButton"
+        android:layout_marginTop="250dp"
+        android:layout_marginRight="5dp"
+        android:text="Search" />
 
     <Button
         android:id="@+id/settingsButton"
         android:text="Settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/searchButton"
-        app:layout_constraintStart_toStartOf="@id/weatherInfo"
-        android:layout_marginTop="16dp"/>
+        android:layout_below="@+id/weather"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="250dp"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/historyButton"
         android:text="View History"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/settingsButton"
-        app:layout_constraintStart_toStartOf="@id/settingsButton"
-        android:layout_marginTop="16dp"/>
+        android:layout_below="@+id/weather"
+        android:layout_toRightOf="@+id/settingsButton"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="250dp"
+        android:layout_marginLeft="5dp"/>
 
-    <TextView
-        android:id="@+id/fakeAd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sponsored Ad: Upgrade to Premium!"
-        android:background="#FFEFD5"
-        android:textColor="#000000"
-        android:gravity="center"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

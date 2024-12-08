@@ -4,25 +4,38 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.icu.text.DateFormat
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.database.FirebaseDatabase
+import java.util.Calendar
+import java.util.TimeZone
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var textView: TextView
+    private lateinit var rl : RelativeLayout
+    private lateinit var city: TextView
+    private lateinit var temperature: TextView
+    private lateinit var weather: TextView
+    private lateinit var weatherDesc: TextView
     private lateinit var searchButton: Button
     private lateinit var settingsButton: Button
     private lateinit var historyButton: Button
+    private lateinit var iconView : ImageView
+    private val iconUrl = "https://openweathermap.org/img/wn/"
     private var lat: Double = 35.0
     private var lon: Double = 139.0
     private lateinit var unit: String
@@ -33,7 +46,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         loadPreferences()
 
-        textView = findViewById(R.id.weatherInfo)
+        rl = findViewById(R.id.main)
+        iconView = findViewById(R.id.weatherIcon)
+
+        // Weather Info
+        city = findViewById(R.id.city)
+        temperature = findViewById(R.id.temperature)
+        weather = findViewById(R.id.weather)
+        weatherDesc = findViewById(R.id.weatherDesc)
+
         searchButton = findViewById(R.id.searchButton)
         settingsButton = findViewById(R.id.settingsButton)
         historyButton = findViewById(R.id.historyButton)
@@ -221,10 +242,34 @@ class MainActivity : AppCompatActivity() {
         weatherView.getModel().setUnits(unit)
         weatherView.displayCurrentWeather(lat, lon) { weatherInfo ->
             runOnUiThread {
-                textView.text = weatherInfo
+                val sb = weatherInfo.split("\n")
+                city.text = sb.find { it.startsWith("City: ") }?.substringAfter("City: ")
+                temperature.text = sb.find { it.startsWith("Temperature: ") }?.substringAfter("Temperature: ")
+                weather.text = sb.find { it.startsWith("Weather: ") }?.substringAfter("Weather: ")
+                weatherDesc.text = sb.find { it.startsWith("Description: ") }?.substringAfter("Description: ")
+
                 val cityName = parseCityName(weatherInfo)
                 if (cityName.isNotEmpty()) {
                     storeCityInFirebase(cityName)
+                }
+
+                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                val timezone = sb.find { it.startsWith("Timezone: ") }?.substringAfter("Timezone: ")
+                val timezoneShift = timezone?.toDouble() ?: 0.0
+                val hour = (calendar.get(Calendar.HOUR_OF_DAY) + (timezoneShift / 3600).toInt()) % 24
+                when (hour) {
+                    in 5..11 -> rl.background = ContextCompat.getDrawable(this, R.drawable.morning)  // 5 AM to 11:59 AM
+                    in 12..16 -> rl.background = ContextCompat.getDrawable(this, R.drawable.afternoon) // 12 PM to 4:59 PM
+                    in 17..20 -> rl.background = ContextCompat.getDrawable(this, R.drawable.evening)  // 5 PM to 8:59 PM
+                    else -> rl.background = ContextCompat.getDrawable(this, R.drawable.night)        // 9 PM to 4:59 AM
+                }
+
+                val iconId = sb.find { it.startsWith("Icon: ") }?.substringAfter("Icon: ")
+                if (iconId != null) {
+                    val url = iconUrl + iconId + ".png"
+                    Glide.with(this).load(url).into(iconView)
+                } else {
+                    Glide.with(this).load(ContextCompat.getDrawable(this, R.drawable.blank)).into(iconView)
                 }
             }
         }

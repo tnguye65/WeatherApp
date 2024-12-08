@@ -34,6 +34,8 @@ class WeatherView() {
             val humidity = mainData?.humidity
             val wMain = weatherDesc?.main
             val wDescription = weatherDesc?.description
+            val iconId = weatherData.weather?.get(0)?.icon
+            val timezone = weatherData.timezone
             val sb = StringBuilder()
             sb.append("City: $city\n")
             sb.append("Country: $country\n")
@@ -42,6 +44,8 @@ class WeatherView() {
             if (temp != null) sb.append("Temperature: $temp${getUnitAbbreviation()}\n")
             if (feelsLike != null) sb.append("Feels Like: $feelsLike${getUnitAbbreviation()}\n")
             if (humidity != null) sb.append("Humidity: $humidity%\n")
+            if (iconId != null) sb.append("Icon: $iconId\n")
+            if (timezone != null) sb.append("Timezone: $timezone\n")
             callback(sb.toString())
         }
     }

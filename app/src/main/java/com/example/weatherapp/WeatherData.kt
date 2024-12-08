@@ -25,7 +25,8 @@ data class Main(
 
 data class Weather(
     @SerializedName("main") val main: String?,
-    @SerializedName("description") val description: String?
+    @SerializedName("description") val description: String?,
+    @SerializedName("icon") val icon: String?
 )
 
 data class Sys(
