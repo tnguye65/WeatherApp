@@ -13,12 +13,8 @@ class WeatherModel(private val context: Context, private val api : ApiService) {
     init {
         val ai: ApplicationInfo = context.applicationContext.packageManager
             .getApplicationInfo(context.applicationContext.packageName, PackageManager.GET_META_DATA)
-        val value = ai.metaData.getString("keyValue")
-
-        key = value.toString()
-
-        // Create option to switch?
-        // ("standard" : Kelvin, "metric" : Celsius, "imperial" : Fahrenheit)
+        val value = context.getString(R.string.weather_api_key)
+        key = value
         units = "imperial"
     }
 
