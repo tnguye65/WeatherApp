@@ -5,11 +5,15 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
+import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.FirebaseDatabase
@@ -21,34 +25,37 @@ class MainActivity : AppCompatActivity() {
     private var lat: Double = 35.0
     private var lon: Double = 139.0
     private lateinit var unit: String
+    private lateinit var locationManager: LocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         loadPreferences()
+
         textView = findViewById(R.id.weatherInfo)
         settingsButton = findViewById(R.id.settingsButton)
         historyButton = findViewById(R.id.historyButton)
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+
         settingsButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
+
         historyButton.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
-        val fineLocationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        val coarseLocationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-        if (fineLocationGranted != PackageManager.PERMISSION_GRANTED || coarseLocationGranted != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 123)
-        } else {
-            getLocationAndLoadWeather()
-        }
+
+        checkLocationPermissionsAndProceed()
     }
 
     override fun onResume() {
         super.onResume()
         loadPreferences()
+        if (hasLocationPermissions()) {
+            getCurrentLocation()
+        }
     }
 
     private fun loadPreferences() {
@@ -62,35 +69,137 @@ class MainActivity : AppCompatActivity() {
             else -> Color.WHITE
         }
         window.decorView.setBackgroundColor(color)
+    }
+
+    private fun hasLocationPermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun checkLocationPermissionsAndProceed() {
+        if (!hasLocationPermissions()) {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            checkLocationEnabledAndProceed()
+        }
+    }
+
+    private fun checkLocationEnabledAndProceed() {
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            showEnableLocationDialog()
+        } else {
+            getCurrentLocation()
+        }
+    }
+
+    private fun showEnableLocationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Enable Location")
+            .setMessage("Your location services are disabled. Please enable them to get weather for your location.")
+            .setPositiveButton("Location Settings") { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                loadWeather(unit) // Load with default coordinates
+            }
+            .show()
+    }
+
+    private fun getCurrentLocation() {
+        if (!hasLocationPermissions()) return
+
+        try {
+            // First try last known location
+            locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let { location ->
+                updateLocationAndLoadWeather(location)
+                return
+            }
+
+            // If no last known location, request update
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                0L,
+                0f,
+                object : LocationListener {
+                    override fun onLocationChanged(location: Location) {
+                        updateLocationAndLoadWeather(location)
+                        locationManager.removeUpdates(this)
+                    }
+                    override fun onProviderEnabled(provider: String) {}
+                    override fun onProviderDisabled(provider: String) {
+                        showEnableLocationDialog()
+                    }
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                },
+                Looper.getMainLooper()
+            )
+
+            // Also try network provider as backup
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                0L,
+                0f,
+                object : LocationListener {
+                    override fun onLocationChanged(location: Location) {
+                        updateLocationAndLoadWeather(location)
+                        locationManager.removeUpdates(this)
+                    }
+                    override fun onProviderEnabled(provider: String) {}
+                    override fun onProviderDisabled(provider: String) {}
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                },
+                Looper.getMainLooper()
+            )
+
+        } catch (e: SecurityException) {
+            Toast.makeText(this, "Error accessing location: ${e.message}", Toast.LENGTH_SHORT).show()
+            loadWeather(unit)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            loadWeather(unit)
+        }
+    }
+
+    private fun updateLocationAndLoadWeather(location: Location) {
+        lat = location.latitude
+        lon = location.longitude
         loadWeather(unit)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == 123) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLocationAndLoadWeather()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkLocationEnabledAndProceed()
             } else {
-                Toast.makeText(this, "Location permission denied. Using default coords.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Location permission denied. Using default location.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 loadWeather(unit)
             }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
-    private fun getLocationAndLoadWeather() {
-        val lm = getSystemService(LOCATION_SERVICE) as LocationManager
-        val fineLocationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        if (fineLocationGranted == PackageManager.PERMISSION_GRANTED) {
-            val location: Location? = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            if (location != null) {
-                lat = location.latitude
-                lon = location.longitude
-            } else {
-                Toast.makeText(this, "No last known location, using default coords.", Toast.LENGTH_SHORT).show()
-            }
-        }
-        loadWeather(unit)
-    }
+
     private fun loadWeather(unit: String) {
         val weatherView = WeatherView(this)
         weatherView.getModel().setUnits(unit)
@@ -104,6 +213,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun parseCityName(info: String): String {
         val lines = info.split("\n")
         for (line in lines) {
@@ -113,11 +223,16 @@ class MainActivity : AppCompatActivity() {
         }
         return ""
     }
+
     private fun storeCityInFirebase(city: String) {
         val db = FirebaseDatabase.getInstance().getReference("searched_cities")
         val key = db.push().key
         if (key != null) {
             db.child(key).setValue(city)
         }
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 123
     }
 }
