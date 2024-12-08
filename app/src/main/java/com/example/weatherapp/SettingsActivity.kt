@@ -7,6 +7,7 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var colorSpinner: Spinner
@@ -15,8 +16,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var clock: AnalogClock
     private lateinit var saveButton: Button
     private lateinit var temperatureUnits: RadioGroup
-    private lateinit var locationSearch: EditText
-    private lateinit var searchButton: Button
 
     private lateinit var prefs: SharedPreferences
     private lateinit var savedColor: String
@@ -27,6 +26,16 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        // Setup toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        // Setup back button
+        findViewById<ImageButton>(R.id.backButton).setOnClickListener {
+            finish()
+        }
+
         // Find views
         colorSpinner = findViewById(R.id.colorSpinner)
         seekBar = findViewById(R.id.daysSeekBar)
@@ -34,8 +43,6 @@ class SettingsActivity : AppCompatActivity() {
         clock = findViewById(R.id.analogClock)
         saveButton = findViewById(R.id.saveButton)
         temperatureUnits = findViewById(R.id.temperatureUnits)
-        locationSearch = findViewById(R.id.locationSearch)
-        searchButton = findViewById(R.id.searchButton)
 
         // SharedPrefs
         loadSharedPreferences()
@@ -77,46 +84,8 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        // Location search
-        searchButton.setOnClickListener {
-            val location = locationSearch.text.toString()
-            if (location.isNotEmpty()) {
-                geocodeLocation(location)
-            } else {
-                Toast.makeText(this, "Please enter a location", Toast.LENGTH_SHORT).show()
-            }
-        }
-
         saveButton.setOnClickListener {
             saveSharedPreferences()
-        }
-    }
-
-    private fun geocodeLocation(location: String) {
-        val geocoder = Geocoder(this)
-        try {
-            val addresses = geocoder.getFromLocationName(location, 1)
-            if (!addresses.isNullOrEmpty()) {
-                val address = addresses[0]
-                val lat = address.latitude
-                val lon = address.longitude
-
-                // Save coordinates to SharedPreferences
-                val editor = prefs.edit()
-                editor.putFloat("saved_lat", lat.toFloat())
-                editor.putFloat("saved_lon", lon.toFloat())
-                editor.apply()
-
-                // Set result to trigger refresh in MainActivity
-                setResult(RESULT_OK)
-
-                Toast.makeText(this, "Location saved: ${address.locality ?: location}", Toast.LENGTH_SHORT).show()
-                finish() // Close settings and return to MainActivity
-            } else {
-                Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error finding location: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -125,10 +94,6 @@ class SettingsActivity : AppCompatActivity() {
         savedColor = prefs.getString("themeColor", "White").toString()
         savedDays = prefs.getInt("forecastDays", 1)
         unit = prefs.getString("temperatureUnit", "fahrenheit").toString()
-
-        // Load saved location if exists
-        val savedLocation = prefs.getString("saved_location", "")
-        locationSearch.setText(savedLocation)
     }
 
     private fun saveSharedPreferences() {
@@ -138,7 +103,6 @@ class SettingsActivity : AppCompatActivity() {
         editor.putString("themeColor", chosenColor)
         editor.putInt("forecastDays", chosenDays)
         editor.putString("temperatureUnit", unit)
-        editor.putString("saved_location", locationSearch.text.toString())
         editor.apply()
         Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show()
         finish()

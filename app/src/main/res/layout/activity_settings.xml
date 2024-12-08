@@ -6,6 +6,33 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#2196F3"
+        android:elevation="4dp">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_revert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:padding="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="32dp"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,22 +42,6 @@
         android:id="@+id/colorSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-
-    <EditText
-        android:id="@+id/locationSearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Search location"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:background="@android:drawable/editbox_background"/>
-
-    <Button
-        android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        android:layout_marginTop="8dp"/>
 
     <AnalogClock
         android:id="@+id/analogClock"

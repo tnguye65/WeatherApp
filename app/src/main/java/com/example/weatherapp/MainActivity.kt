@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: TextView
+    private lateinit var searchButton: Button
     private lateinit var settingsButton: Button
     private lateinit var historyButton: Button
     private var lat: Double = 35.0
@@ -33,9 +34,15 @@ class MainActivity : AppCompatActivity() {
         loadPreferences()
 
         textView = findViewById(R.id.weatherInfo)
+        searchButton = findViewById(R.id.searchButton)
         settingsButton = findViewById(R.id.settingsButton)
         historyButton = findViewById(R.id.historyButton)
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+
+        searchButton.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
+        }
 
         settingsButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
