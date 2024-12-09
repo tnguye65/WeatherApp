@@ -57,13 +57,19 @@ class HistoryActivity : AppCompatActivity() {
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 cities.clear()
-                for (child in snapshot.children) {
+//                for (child in snapshot.children) {
+//                    val city = child.getValue(String::class.java)
+//                    if (city != null && !cities.contains(city)) {
+//                        cities.add(city)
+//                    }
+//                }
+                for (child in snapshot.children.toList().reversed()) {
                     val city = child.getValue(String::class.java)
                     if (city != null && !cities.contains(city)) {
                         cities.add(city)
                     }
                 }
-                cities.reverse() // Show newest first
+//                cities.reverse() // Show newest first
 //                adapter.notifyDataSetChanged()
 //
 //                // Show/hide empty view
