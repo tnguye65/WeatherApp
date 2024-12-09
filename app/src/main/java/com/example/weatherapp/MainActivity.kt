@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
             }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener, Looper.getMainLooper())
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener, Looper.getMainLooper())
-        } catch (e: Exception) {
+        } catch (e: SecurityException) {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             loadWeather(unit)
         }
