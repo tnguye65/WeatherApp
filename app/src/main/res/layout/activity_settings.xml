@@ -33,15 +33,15 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Choose Theme Color:"/>
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Choose Theme Color:"/>-->
 
-    <Spinner
-        android:id="@+id/colorSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+<!--    <Spinner-->
+<!--        android:id="@+id/colorSpinner"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"/>-->
 
     <AnalogClock
         android:id="@+id/analogClock"

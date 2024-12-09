@@ -81,13 +81,21 @@
 
     <Button
         android:id="@+id/historyButton"
-        android:text="View History"
+        android:text="History"
         android:layout_below="@+id/weather"
         android:layout_toRightOf="@+id/settingsButton"
         android:layout_width="130dp"
         android:layout_height="50dp"
         android:layout_marginTop="250dp"
         android:layout_marginLeft="5dp"/>
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/settingsButton"
+        android:text="Current Location"
+        android:id="@+id/currButton"
+        android:layout_centerHorizontal="true" />
 
 
     <com.google.android.gms.ads.AdView

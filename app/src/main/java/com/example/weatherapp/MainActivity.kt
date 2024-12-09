@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchButton: Button
     private lateinit var settingsButton: Button
     private lateinit var historyButton: Button
+    private lateinit var currButton: Button
     private lateinit var iconView : ImageView
     private val iconUrl = "https://openweathermap.org/img/wn/"
     private var lat: Double = 35.0
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         searchButton = findViewById(R.id.searchButton)
         settingsButton = findViewById(R.id.settingsButton)
         historyButton = findViewById(R.id.historyButton)
+        currButton = findViewById(R.id.currButton)
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
         searchButton.setOnClickListener {
@@ -79,6 +81,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
+
+        currButton.setOnClickListener{checkLocationPermissionsAndProceed()}
 
 
         var adView: AdView = findViewById(R.id.ad_view)
@@ -306,6 +310,7 @@ class MainActivity : AppCompatActivity() {
             db.child(key).setValue(city)
         }
     }
+
 
 
     companion object {

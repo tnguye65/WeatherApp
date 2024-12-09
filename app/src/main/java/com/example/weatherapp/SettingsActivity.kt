@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var colorSpinner: Spinner
+//    private lateinit var colorSpinner: Spinner
     private lateinit var seekBar: SeekBar
     private lateinit var daysTV: TextView
     private lateinit var clock: AnalogClock
@@ -18,7 +18,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var temperatureUnits: RadioGroup
 
     private lateinit var prefs: SharedPreferences
-    private lateinit var savedColor: String
+//    private lateinit var savedColor: String
     private var savedDays: Int = 1
     private lateinit var unit: String
 
@@ -37,7 +37,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Find views
-        colorSpinner = findViewById(R.id.colorSpinner)
+//        colorSpinner = findViewById(R.id.colorSpinner)
         seekBar = findViewById(R.id.daysSeekBar)
         daysTV = findViewById(R.id.daysTextView)
         clock = findViewById(R.id.analogClock)
@@ -48,14 +48,14 @@ class SettingsActivity : AppCompatActivity() {
         loadSharedPreferences()
 
         // Spinner
-        val colors = arrayOf("White", "Cyan", "Yellow", "LightGray")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, colors)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        colorSpinner.adapter = adapter
-        val index = colors.indexOf(savedColor)
-        if (index >= 0) {
-            colorSpinner.setSelection(index)
-        }
+//        val colors = arrayOf("White", "Cyan", "Yellow", "LightGray")
+//        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, colors)
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//        colorSpinner.adapter = adapter
+//        val index = colors.indexOf(savedColor)
+//        if (index >= 0) {
+//            colorSpinner.setSelection(index)
+//        }
 
         // Seek bar
         seekBar.progress = savedDays
@@ -91,16 +91,16 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun loadSharedPreferences() {
         prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-        savedColor = prefs.getString("themeColor", "White").toString()
+//        savedColor = prefs.getString("themeColor", "White").toString()
         savedDays = prefs.getInt("forecastDays", 1)
         unit = prefs.getString("temperatureUnit", "fahrenheit").toString()
     }
 
     private fun saveSharedPreferences() {
-        val chosenColor = colorSpinner.selectedItem.toString()
+//        val chosenColor = colorSpinner.selectedItem.toString()
         val numCities = seekBar.progress
         val editor = prefs.edit()
-        editor.putString("themeColor", chosenColor)
+//        editor.putString("themeColor", chosenColor)
         editor.putInt("numCities", numCities)
         editor.putString("temperatureUnit", unit)
         editor.apply()
