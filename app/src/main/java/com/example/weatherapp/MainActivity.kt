@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide
 import com.google.firebase.database.FirebaseDatabase
 import java.util.Calendar
 import java.util.TimeZone
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var rl : RelativeLayout
@@ -74,6 +76,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
+
+        var adView: AdView = findViewById(R.id.ad_view)
+        var builder : AdRequest.Builder = AdRequest.Builder()
+        builder.addKeyword("weather").addKeyword("climate")
+        var request : AdRequest = builder.build()
+        adView.loadAd(request)
 
         checkLocationPermissionsAndProceed()
     }

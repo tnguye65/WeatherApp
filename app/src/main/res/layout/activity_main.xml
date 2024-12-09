@@ -89,4 +89,14 @@
         android:layout_marginTop="250dp"
         android:layout_marginLeft="5dp"/>
 
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/ad_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:adSize="BANNER"
+        app:adUnitId="ca-app-pub-3940256099942544/6300978111"
+        android:background="#FCCC"
+        android:layout_alignParentBottom="true"
+        />
+
 </RelativeLayout>

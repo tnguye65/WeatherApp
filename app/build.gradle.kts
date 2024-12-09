@@ -64,4 +64,9 @@ dependencies {
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // Google Ad Dependency
+    implementation("com.google.android.gms:play-services-ads:23.5.0")
+    implementation("com.google.android.gms:play-services-measurement-api:22.1.2")
+    implementation("com.google.firebase:firebase-analytics:22.1.2")
 }
