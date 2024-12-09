@@ -263,8 +263,9 @@ class MainActivity : AppCompatActivity() {
 
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 val timezone = sb.find { it.startsWith("Timezone: ") }?.substringAfter("Timezone: ")
-                val timezoneShift = timezone?.toDouble() ?: 0.0
-                val hour = (calendar.get(Calendar.HOUR_OF_DAY) + (timezoneShift / 3600).toInt()) % 24
+                val timezoneShiftSeconds = timezone?.toDouble() ?: 0.0
+                val timezoneShiftHours = (timezoneShiftSeconds / 3600).toInt()
+                val hour = (calendar.get(Calendar.HOUR_OF_DAY) + timezoneShiftHours + 24) % 24
                 when (hour) {
                     in 5..11 -> rl.background = ContextCompat.getDrawable(this, R.drawable.morning)  // 5 AM to 11:59 AM
                     in 12..16 -> rl.background = ContextCompat.getDrawable(this, R.drawable.afternoon) // 12 PM to 4:59 PM
