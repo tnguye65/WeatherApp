@@ -51,12 +51,4 @@
         android:id="@+id/btnSearch"
         android:layout_width="wrap_content"/>
 
-    <AnalogClock
-        android:layout_centerVertical="true"
-        android:layout_height="200dp"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/clkAnalog"
-        android:layout_width="162dp"/>
-
 </RelativeLayout>
