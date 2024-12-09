@@ -12,10 +12,7 @@ data class WeatherData(
     @SerializedName("sys") val sys: Sys?
 )
 
-data class Coord(
-    @SerializedName("lon") val lon: Double?,
-    @SerializedName("lat") val lat: Double?
-)
+data class Coord(@SerializedName("lon") val lon: Double?, @SerializedName("lat") val lat: Double?)
 
 data class Main(
     @SerializedName("temp") val temp: Double?,
@@ -29,6 +26,4 @@ data class Weather(
     @SerializedName("icon") val icon: String?
 )
 
-data class Sys(
-    @SerializedName("country") val country: String?,
-)
+data class Sys(@SerializedName("country") val country: String?)

@@ -14,8 +14,8 @@ import java.util.Locale
 import android.location.Address
 
 class HistoryActivity : AppCompatActivity() {
-    private lateinit var listView: ListView
-    private lateinit var emptyView: TextView
+    private lateinit var lvHist: ListView
+    private lateinit var tvEmpty: TextView
     private lateinit var adapter: ArrayAdapter<String>
     private lateinit var database: DatabaseReference
     private val cities = ArrayList<String>()
@@ -24,38 +24,19 @@ class HistoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
-
-        // Setup toolbar
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        val tbar = findViewById<Toolbar>(R.id.tbar)
+        setSupportActionBar(tbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        // Setup back button
-        findViewById<ImageButton>(R.id.backButton).setOnClickListener {
-            finish()
-        }
-
-        // Initialize views
-        listView = findViewById(R.id.historyListView)
-        emptyView = findViewById(R.id.emptyView)
-
-        // Setup adapter with custom layout
-        adapter = ArrayAdapter(
-            this,
-            R.layout.history_list_item,
-            cities
-        )
-        listView.adapter = adapter
-        listView.emptyView = emptyView
-
-        // Initialize Firebase and load data
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
+        lvHist = findViewById(R.id.lvHist)
+        tvEmpty = findViewById(R.id.tvEmpty)
+        adapter = ArrayAdapter(this, R.layout.history_list_item, cities)
+        lvHist.adapter = adapter
+        lvHist.emptyView = tvEmpty
         database = FirebaseDatabase.getInstance().getReference("searched_cities")
         loadHistory()
-
-        // Add item click listener
-        listView.setOnItemClickListener { parent, view, position, id ->
-            val selectedCity = cities[position]
-            geocodeAndUpdateLocation(selectedCity)
+        lvHist.setOnItemClickListener { _, _, position, _ ->
+            geocodeAndUpdateLocation(cities[position])
         }
     }
 
@@ -63,79 +44,51 @@ class HistoryActivity : AppCompatActivity() {
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 cities.clear()
-                for (child in snapshot.children.toList().reversed()) {
-                    val city = child.getValue(String::class.java)
-                    if (city != null && !cities.contains(city)) {
-                        cities.add(city)
+                snapshot.children.toList().reversed().forEach { child ->
+                    child.getValue(String::class.java)?.let { city ->
+                        if (!cities.contains(city)) cities.add(city)
                     }
                 }
                 prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-                val numCities = prefs.getInt("numCities", 13)
-                val newCities = cities.take(numCities)
+                val newCities = cities.take(prefs.getInt("numCities", 13))
                 adapter.clear()
                 adapter.addAll(newCities)
                 adapter.notifyDataSetChanged()
-                emptyView.visibility = if (newCities.isEmpty()) View.VISIBLE else View.GONE
+                tvEmpty.visibility = if (newCities.isEmpty()) View.VISIBLE else View.GONE
             }
-
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                    this@HistoryActivity,
-                    "Error loading history: ${error.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@HistoryActivity, "Error loading history: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun geocodeAndUpdateLocation(cityName: String) {
-        // Perform geocoding in a background thread
-        GeocodeTask().execute(cityName)
-    }
+    private fun geocodeAndUpdateLocation(cityName: String) = GeocodeTask().execute(cityName)
 
-    // AsyncTask to perform geocoding
     inner class GeocodeTask : AsyncTask<String, Void, Pair<Double, Double>?>() {
         override fun doInBackground(vararg params: String?): Pair<Double, Double>? {
-            val city = params[0]
-            val geocoder = Geocoder(this@HistoryActivity, Locale.getDefault())
-            try {
-                val addresses: List<Address>? = city?.let { geocoder.getFromLocationName(it, 1) }
-                if (!addresses.isNullOrEmpty()) {
-                    val address = addresses[0]
-                    val lat = address.latitude
-                    val lon = address.longitude
-                    return Pair(lat, lon)
+            return try {
+                params[0]?.let { city ->
+                    Geocoder(this@HistoryActivity, Locale.getDefault()).getFromLocationName(city, 1)?.firstOrNull()?.let {
+                        Pair(it.latitude, it.longitude)
+                    }
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            return null
+            } catch (e: IOException) { null }
         }
 
         override fun onPostExecute(result: Pair<Double, Double>?) {
-            if (result != null) {
-                saveLocationToPreferences(result.first, result.second)
-                Toast.makeText(
-                    this@HistoryActivity,
-                    "Location updated to $result",
-                    Toast.LENGTH_SHORT
-                ).show()
-                finish() // Return to MainActivity
-            } else {
-                Toast.makeText(
-                    this@HistoryActivity,
-                    "Unable to find location",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            result?.let {
+                saveLocationToPreferences(it.first, it.second)
+                Toast.makeText(this@HistoryActivity, "Location updated to $result", Toast.LENGTH_SHORT).show()
+                finish()
+            } ?: Toast.makeText(this@HistoryActivity, "Unable to find location", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun saveLocationToPreferences(lat: Double, lon: Double) {
-        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-        val editor = prefs.edit()
-        editor.putFloat("saved_lat", lat.toFloat())
-        editor.putFloat("saved_lon", lon.toFloat())
-        editor.apply()
+        getSharedPreferences("AppPrefs", MODE_PRIVATE).edit().apply {
+            putFloat("saved_lat", lat.toFloat())
+            putFloat("saved_lon", lon.toFloat())
+            apply()
+        }
     }
 }

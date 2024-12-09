@@ -1,111 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:background="@drawable/morning"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    tools:context=".MainActivity"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        android:id="@+id/city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:text="City"
-        android:textSize="25dp"
         android:textColor="@color/white"
-        android:layout_marginTop="20dp"/>
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:id="@+id/tvCity"
+        android:text="City"
+        android:layout_width="wrap_content"/>
 
     <ImageView
-        android:layout_width="150dp"
+        android:src="@drawable/blank"
+        android:layout_centerHorizontal="true"
         android:layout_height="150dp"
-        android:id="@+id/weatherIcon"
         android:layout_marginTop="50dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/blank"/>
+        android:id="@+id/imgWeather"
+        android:layout_width="150dp"/>
 
     <TextView
-        android:id="@+id/temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/city"
-        android:text="Temperature"
+        android:layout_below="@+id/tvCity"
+        android:layout_marginTop="150dp"
         android:textSize="50dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tvTemp"
+        android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:layout_marginTop="150dp"/>
+        android:text="Temperature"
+        android:layout_width="wrap_content"/>
 
     <TextView
-        android:id="@+id/weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/tvTemp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/temperature"
-        android:text="Weather"
         android:textSize="30dp"
+        android:id="@+id/tvWeather"
+        android:layout_width="wrap_content"
         android:textColor="@color/white"
-        android:layout_marginTop="10dp"/>
+        android:text="Weather"
+        android:layout_height="wrap_content"/>
 
     <TextView
-        android:id="@+id/weatherDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/weather"
-        android:text="Weather Description"
-        android:textSize="25dp"
+        android:layout_below="@+id/tvWeather"
         android:textColor="@color/white"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tvDesc"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:text="Weather Description"
+        android:layout_width="wrap_content"/>
 
     <Button
-        android:id="@+id/searchButton"
-        android:layout_width="130dp"
+        android:layout_toLeftOf="@id/btnSettings"
         android:layout_height="50dp"
-        android:layout_below="@+id/weather"
-        android:layout_toLeftOf="@id/settingsButton"
-        android:layout_marginTop="250dp"
         android:layout_marginRight="5dp"
-        android:text="Search" />
+        android:layout_below="@+id/tvWeather"
+        android:text="Search"
+        android:layout_marginTop="250dp"
+        android:id="@+id/btnSearch"
+        android:layout_width="130dp"/>
 
     <Button
-        android:id="@+id/settingsButton"
+        android:layout_marginTop="250dp"
+        android:layout_below="@+id/tvWeather"
+        android:layout_centerHorizontal="true"
         android:text="Settings"
-        android:layout_below="@+id/weather"
-        android:layout_width="130dp"
         android:layout_height="50dp"
-        android:layout_marginTop="250dp"
-        android:layout_centerHorizontal="true"/>
+        android:id="@+id/btnSettings"
+        android:layout_width="130dp"/>
 
     <Button
-        android:id="@+id/historyButton"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/btnSettings"
+        android:layout_below="@+id/tvWeather"
+        android:layout_height="50dp"
         android:text="History"
-        android:layout_below="@+id/weather"
-        android:layout_toRightOf="@+id/settingsButton"
-        android:layout_width="130dp"
-        android:layout_height="50dp"
         android:layout_marginTop="250dp"
-        android:layout_marginLeft="5dp"/>
+        android:id="@+id/btnHist"
+        android:layout_width="130dp"/>
 
     <Button
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/settingsButton"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/btnSettings"
         android:text="Current Location"
-        android:id="@+id/currButton"
-        android:layout_centerHorizontal="true" />
-
+        android:layout_height="50dp"
+        android:id="@+id/btnCurr"
+        android:layout_width="200dp"/>
 
     <com.google.android.gms.ads.AdView
-        android:id="@+id/ad_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:adSize="BANNER"
-        app:adUnitId="ca-app-pub-3940256099942544/6300978111"
         android:background="#FCCC"
         android:layout_alignParentBottom="true"
-        />
+        app:adSize="BANNER"
+        android:layout_height="wrap_content"
+        android:id="@+id/adView"
+        app:adUnitId="ca-app-pub-3940256099942544/6300978111"
+        android:layout_width="match_parent"/>
 
 </RelativeLayout>

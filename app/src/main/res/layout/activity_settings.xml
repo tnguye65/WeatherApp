@@ -1,99 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="16dp"
     android:orientation="vertical"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:elevation="4dp"
         android:background="#2196F3"
-        android:elevation="4dp">
+        android:layout_height="?attr/actionBarSize"
+        android:id="@+id/tbar"
+        android:layout_width="match_parent">
 
         <ImageButton
-            android:id="@+id/backButton"
+            android:padding="8dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_revert"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:id="@+id/btnBack"
             android:contentDescription="Back"
-            android:padding="8dp"/>
+            android:src="@android:drawable/ic_menu_revert"
+            android:layout_height="wrap_content"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Settings"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginStart="32dp"/>
+            android:textSize="20sp"
+            android:layout_marginStart="32dp"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="Settings"
+            android:layout_width="wrap_content"/>
 
     </androidx.appcompat.widget.Toolbar>
 
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Choose Theme Color:"/>-->
-
-<!--    <Spinner-->
-<!--        android:id="@+id/colorSpinner"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"/>-->
-
     <AnalogClock
-        android:id="@+id/analogClock"
-        android:layout_width="162dp"
+        android:layout_marginTop="16dp"
         android:layout_height="200dp"
-        android:layout_marginTop="16dp" />
+        android:id="@+id/clkAnalog"
+        android:layout_width="162dp"/>
 
     <TextView
-        android:id="@+id/daysTextView"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_height="wrap_content"
         android:text="Cities in History: 1"
-        android:layout_marginTop="16dp"/>
+        android:id="@+id/tvDays"
+        android:layout_width="wrap_content"/>
 
     <SeekBar
-        android:id="@+id/daysSeekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:progress="1"
         android:max="26"
-        android:progress="1"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/sbDays"
+        android:layout_width="match_parent"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:text="Choose Temperature Unit:"
         android:layout_height="wrap_content"
-        android:text="Choose Temperature Unit:"/>
+        android:layout_width="wrap_content"/>
 
     <RadioGroup
-        android:id="@+id/temperatureUnits"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/rgTemp"
+        android:layout_width="wrap_content">
         <RadioButton
-            android:id="@+id/fahrenheit"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fahrenheit"/>
+            android:id="@+id/rbF"
+            android:text="Fahrenheit"
+            android:layout_width="wrap_content"/>
         <RadioButton
-            android:id="@+id/celsius"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Celsius"/>
+            android:id="@+id/rbC"
+            android:text="Celsius"
+            android:layout_width="wrap_content"/>
         <RadioButton
-            android:id="@+id/kelvin"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kelvin"/>
+            android:id="@+id/rbK"
+            android:text="Kelvin"
+            android:layout_width="wrap_content"/>
     </RadioGroup>
 
     <Button
-        android:id="@+id/saveButton"
-        android:text="Save"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:text="Save"
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"/>
 
 </LinearLayout>
