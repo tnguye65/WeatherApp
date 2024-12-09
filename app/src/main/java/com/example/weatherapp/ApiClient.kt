@@ -7,10 +7,9 @@ class ApiClient {
     private lateinit var retrofit: Retrofit
 
     fun getClient() : Retrofit {
-        retrofit = Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl("https://api.openweathermap.org")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        return retrofit
     }
 }
