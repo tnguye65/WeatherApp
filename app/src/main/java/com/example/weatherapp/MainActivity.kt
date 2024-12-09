@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private var lon: Double = 139.0
     private lateinit var unit: String
     private lateinit var locationManager: LocationManager
-    private lateinit var prefs: SharedPreferences
+//    private lateinit var prefs: SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
