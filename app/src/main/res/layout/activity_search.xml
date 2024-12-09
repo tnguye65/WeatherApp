@@ -51,4 +51,13 @@
         android:text="Search"
         android:layout_marginTop="8dp"/>
 
+    <AnalogClock
+        android:id="@+id/analogClock"
+        android:layout_width="162dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        />
+
 </RelativeLayout>
