@@ -100,6 +100,14 @@ class MainActivity : AppCompatActivity() {
         loadWeather(unit)
     }
 
+    private fun saveLocationToPreferences(lat: Double, lon: Double) {
+        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putFloat("saved_lat", lat.toFloat())
+        editor.putFloat("saved_lon", lon.toFloat())
+        editor.apply()
+    }
+
     private fun loadPreferences() {
         val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
         val colorStr = prefs.getString("themeColor", "White")
@@ -230,6 +238,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateLocationAndLoadWeather(location: Location) {
         lat = location.latitude
         lon = location.longitude
+        saveLocationToPreferences(lat, lon) // Save the new location
         loadWeather(unit)
     }
 
