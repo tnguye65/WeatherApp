@@ -53,14 +53,14 @@
         android:id="@+id/daysTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Days: 1"
+        android:text="Cities in History: 1"
         android:layout_marginTop="16dp"/>
 
     <SeekBar
         android:id="@+id/daysSeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="7"
+        android:max="26"
         android:progress="1"/>
 
     <TextView

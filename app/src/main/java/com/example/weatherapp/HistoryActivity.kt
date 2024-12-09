@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -17,6 +18,8 @@ class HistoryActivity : AppCompatActivity() {
     private lateinit var adapter: ArrayAdapter<String>
     private lateinit var database: DatabaseReference
     private val cities = ArrayList<String>()
+    private lateinit var prefs: SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +63,18 @@ class HistoryActivity : AppCompatActivity() {
                         cities.add(city)
                     }
                 }
-                cities.sortDescending() // Show newest first
-                adapter.notifyDataSetChanged()
-
-                // Show/hide empty view
-                emptyView.visibility = if (cities.isEmpty()) View.VISIBLE else View.GONE
+                cities.reverse() // Show newest first
+//                adapter.notifyDataSetChanged()
+//
+//                // Show/hide empty view
+//                emptyView.visibility = if (cities.isEmpty()) View.VISIBLE else View.GONE
+                prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+                val numCities = prefs.getInt("numCities", 13)
+                val newCities = cities.take(numCities)
+                adapter.clear()  // Clear the previous data in the adapter
+                adapter.addAll(newCities)  // Add the first 5 cities to the adapter
+                adapter.notifyDataSetChanged()  // Notify the adapter that the data has changed
+                emptyView.visibility = if (newCities.isEmpty()) View.VISIBLE else View.GONE
             }
 
             override fun onCancelled(error: DatabaseError) {

@@ -2,6 +2,7 @@ package com.example.weatherapp
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.icu.text.DateFormat
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private var lon: Double = 139.0
     private lateinit var unit: String
     private lateinit var locationManager: LocationManager
+    private lateinit var prefs: SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +80,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
         var adView: AdView = findViewById(R.id.ad_view)
         var builder : AdRequest.Builder = AdRequest.Builder()
         builder.addKeyword("weather").addKeyword("climate")
@@ -96,6 +100,7 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
         val colorStr = prefs.getString("themeColor", "White")
         unit = prefs.getString("temperatureUnit", "fahrenheit").toString()
+
 
         // Load saved coordinates if they exist
         val savedLat = prefs.getFloat("saved_lat", Float.MIN_VALUE)
@@ -301,6 +306,7 @@ class MainActivity : AppCompatActivity() {
             db.child(key).setValue(city)
         }
     }
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 123

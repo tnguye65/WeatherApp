@@ -59,10 +59,10 @@ class SettingsActivity : AppCompatActivity() {
 
         // Seek bar
         seekBar.progress = savedDays
-        daysTV.text = "Days: $savedDays"
+        daysTV.text = "Cities in History: $savedDays"
         seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
-                daysTV.text = "Days: $progress"
+                daysTV.text = "Cities in History: $progress"
             }
             override fun onStartTrackingTouch(sb: SeekBar?) {}
             override fun onStopTrackingTouch(sb: SeekBar?) {}
@@ -98,10 +98,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun saveSharedPreferences() {
         val chosenColor = colorSpinner.selectedItem.toString()
-        val chosenDays = seekBar.progress
+        val numCities = seekBar.progress
         val editor = prefs.edit()
         editor.putString("themeColor", chosenColor)
-        editor.putInt("forecastDays", chosenDays)
+        editor.putInt("numCities", numCities)
         editor.putString("temperatureUnit", unit)
         editor.apply()
         Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show()
