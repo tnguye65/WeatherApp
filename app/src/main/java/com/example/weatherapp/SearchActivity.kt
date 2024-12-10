@@ -23,22 +23,32 @@ class SearchActivity : AppCompatActivity() {
         etLoc = findViewById(R.id.etLoc)
         btnSearch = findViewById(R.id.btnSearch)
         btnSearch.setOnClickListener {
-            etLoc.text.toString().takeIf { it.isNotEmpty() }?.let { geocodeLocation(it) }
-                ?: Toast.makeText(this, "Please enter a location", Toast.LENGTH_SHORT).show()
+            val locationText = etLoc.text.toString()
+            if (locationText.isNotEmpty()) {
+                geocodeLocation(locationText)
+            } else {
+                Toast.makeText(this, "Please enter a location", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    private fun geocodeLocation(location: String) = try {
-        Geocoder(this).getFromLocationName(location, 1)?.firstOrNull()?.let { address ->
-            prefs.edit().apply {
-                putFloat("saved_lat", address.latitude.toFloat())
-                putFloat("saved_lon", address.longitude.toFloat())
-                apply()
+    private fun geocodeLocation(location: String) {
+        try {
+            val addresses = Geocoder(this).getFromLocationName(location, 1)
+            if (addresses != null && addresses.size > 0) {
+                val address = addresses[0]
+                val editor = prefs.edit()
+                editor.putFloat("saved_lat", address.latitude.toFloat())
+                editor.putFloat("saved_lon", address.longitude.toFloat())
+                editor.apply()
+                val locationName = address.locality ?: location
+                Toast.makeText(this, "Location saved: $locationName", Toast.LENGTH_SHORT).show()
+                finish()
+            } else {
+                Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(this, "Location saved: ${address.locality ?: location}", Toast.LENGTH_SHORT).show()
-            finish()
-        } ?: Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-        Toast.makeText(this, "Error finding location: ${e.message}", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error finding location: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 }

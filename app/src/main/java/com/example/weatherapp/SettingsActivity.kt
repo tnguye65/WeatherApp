@@ -22,7 +22,6 @@ class SettingsActivity : AppCompatActivity() {
         setSupportActionBar(findViewById<Toolbar>(R.id.tbar))
         supportActionBar?.setDisplayShowTitleEnabled(false)
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
-
         initializeViews()
         loadSharedPreferences()
         setupSeekBar()
@@ -51,16 +50,20 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupTemperatureUnits() {
-        rgTemp.check(when(unit) {
-            "celsius" -> R.id.rbC
-            "kelvin" -> R.id.rbK
-            else -> R.id.rbF
-        })
+        if (unit == "celsius") {
+            rgTemp.check(R.id.rbC)
+        } else if (unit == "kelvin") {
+            rgTemp.check(R.id.rbK)
+        } else {
+            rgTemp.check(R.id.rbF)
+        }
         rgTemp.setOnCheckedChangeListener { _, checkedId ->
-            unit = when(checkedId) {
-                R.id.rbC -> "celsius"
-                R.id.rbK -> "kelvin"
-                else -> "fahrenheit"
+            if (checkedId == R.id.rbC) {
+                unit = "celsius"
+            } else if (checkedId == R.id.rbK) {
+                unit = "kelvin"
+            } else {
+                unit = "fahrenheit"
             }
         }
     }
@@ -72,11 +75,10 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun saveSharedPreferences() {
-        prefs.edit().apply {
-            putInt("numCities", sb.progress)
-            putString("temperatureUnit", unit)
-            apply()
-        }
+        val editor = prefs.edit()
+        editor.putInt("numCities", sb.progress)
+        editor.putString("temperatureUnit", unit)
+        editor.apply()
         Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show()
         finish()
     }

@@ -13,11 +13,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
@@ -39,14 +35,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnHist: Button
     private lateinit var btnCurr: Button
     private lateinit var imgWeather: ImageView
-    private val iconUrl = "https://openweathermap.org/img/wn/"
+    private val iUrl = "https://openweathermap.org/img/wn/"
     private var lat = 35.0
     private var lon = 139.0
     private lateinit var unit: String
-    private lateinit var locationManager: LocationManager
+    private lateinit var locMgr: LocationManager
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(s: Bundle?) {
+        super.onCreate(s)
         setContentView(R.layout.activity_main)
         loadPreferences()
         initializeViews()
@@ -66,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         btnSettings = findViewById(R.id.btnSettings)
         btnHist = findViewById(R.id.btnHist)
         btnCurr = findViewById(R.id.btnCurr)
-        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        locMgr = getSystemService(LOCATION_SERVICE) as LocationManager
     }
 
     private fun setupButtons() {
@@ -90,30 +86,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveLocationToPreferences(lat: Double, lon: Double) {
-        getSharedPreferences("AppPrefs", MODE_PRIVATE).edit().apply {
-            putFloat("saved_lat", lat.toFloat())
-            putFloat("saved_lon", lon.toFloat())
-            apply()
-        }
+        val e = getSharedPreferences("AppPrefs", MODE_PRIVATE).edit()
+        e.putFloat("saved_lat", lat.toFloat())
+        e.putFloat("saved_lon", lon.toFloat())
+        e.apply()
     }
 
     private fun loadPreferences() {
-        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-        unit = prefs.getString("temperatureUnit", "fahrenheit").toString()
-        window.decorView.setBackgroundColor(when(prefs.getString("themeColor", "White")) {
-            "Cyan" -> Color.CYAN
-            "Yellow" -> Color.YELLOW
-            "LightGray" -> Color.LTGRAY
-            else -> Color.WHITE
-        })
-        prefs.getFloat("saved_lat", Float.MIN_VALUE).let { savedLat ->
-            prefs.getFloat("saved_lon", Float.MIN_VALUE).let { savedLon ->
-                if (savedLat != Float.MIN_VALUE && savedLon != Float.MIN_VALUE) {
-                    lat = savedLat.toDouble()
-                    lon = savedLon.toDouble()
-                    loadWeather(unit)
-                }
-            }
+        val p = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        unit = p.getString("temperatureUnit", "fahrenheit").toString()
+        val tc = p.getString("themeColor", "White")
+        if (tc == "Cyan") {
+            window.decorView.setBackgroundColor(Color.CYAN)
+        } else if (tc == "Yellow") {
+            window.decorView.setBackgroundColor(Color.YELLOW)
+        } else if (tc == "LightGray") {
+            window.decorView.setBackgroundColor(Color.LTGRAY)
+        } else {
+            window.decorView.setBackgroundColor(Color.WHITE)
+        }
+        val sl = p.getFloat("saved_lat", Float.MIN_VALUE)
+        val sn = p.getFloat("saved_lon", Float.MIN_VALUE)
+        if (sl != Float.MIN_VALUE && sn != Float.MIN_VALUE) {
+            lat = sl.toDouble()
+            lon = sn.toDouble()
+            loadWeather(unit)
         }
     }
 
@@ -129,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkLocationEnabledAndProceed() {
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) showEnableLocationDialog()
+        if (!locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) showEnableLocationDialog()
         else getCurrentLocation()
     }
 
@@ -140,8 +137,8 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Location Settings") { _, _ ->
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
+            .setNegativeButton("Cancel") { d, _ ->
+                d.dismiss()
                 loadWeather(unit)
             }
             .show()
@@ -150,38 +147,39 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLocation() {
         if (!hasLocationPermissions()) return
         try {
-            locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
-                updateLocationAndLoadWeather(it)
+            val l = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            if (l != null) {
+                updateLocationAndLoadWeather(l)
                 return
             }
-            val locationListener = object : LocationListener {
-                override fun onLocationChanged(location: Location) {
-                    updateLocationAndLoadWeather(location)
-                    locationManager.removeUpdates(this)
+            val ll = object : LocationListener {
+                override fun onLocationChanged(loc: Location) {
+                    updateLocationAndLoadWeather(loc)
+                    locMgr.removeUpdates(this)
                 }
-                override fun onProviderEnabled(provider: String) {}
-                override fun onProviderDisabled(provider: String) { showEnableLocationDialog() }
-                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                override fun onProviderEnabled(p: String) {}
+                override fun onProviderDisabled(p: String) { showEnableLocationDialog() }
+                override fun onStatusChanged(p: String?, s: Int, ex: Bundle?) {}
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener, Looper.getMainLooper())
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener, Looper.getMainLooper())
+            locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, ll, Looper.getMainLooper())
+            locMgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, ll, Looper.getMainLooper())
         } catch (e: SecurityException) {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             loadWeather(unit)
         }
     }
 
-    private fun updateLocationAndLoadWeather(location: Location) {
-        lat = location.latitude
-        lon = location.longitude
+    private fun updateLocationAndLoadWeather(l: Location) {
+        lat = l.latitude
+        lon = l.longitude
         saveLocationToPreferences(lat, lon)
         loadWeather(unit)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) checkLocationEnabledAndProceed()
+    override fun onRequestPermissionsResult(rc: Int, p: Array<out String>, gr: IntArray) {
+        super.onRequestPermissionsResult(rc, p, gr)
+        if (rc == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (gr.isNotEmpty() && gr[0] == PackageManager.PERMISSION_GRANTED) checkLocationEnabledAndProceed()
             else {
                 Toast.makeText(this, "Location permission denied. Using default location.", Toast.LENGTH_SHORT).show()
                 loadWeather(unit)
@@ -189,53 +187,91 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadWeather(unit: String) {
-        WeatherView(this).apply {
-            getModel().setUnits(unit)
-            displayCurrentWeather(lat, lon) { weatherInfo ->
-                runOnUiThread {
-                    val sb = weatherInfo.split("\n")
-                    updateWeatherUI(sb)
-                    parseCityName(weatherInfo).takeIf { it.isNotEmpty() }?.let { storeCityInFirebase(it) }
-                    updateBackground(sb)
-                    updateWeatherIcon(sb)
+    private fun loadWeather(u: String) {
+        val w = WeatherView(this)
+        w.getModel().setUnits(u)
+        w.displayCurrentWeather(lat, lon) { wi ->
+            runOnUiThread {
+                val wl = wi.split("\n")
+                updateWeatherUI(wl)
+                val cn = parseCityName(wi)
+                if (cn.isNotEmpty()) {
+                    storeCityInFirebase(cn)
                 }
+                updateBackground(wl)
+                updateWeatherIcon(wl)
             }
         }
     }
 
-    private fun updateWeatherUI(sb: List<String>) {
-        tvCity.text = sb.find { it.startsWith("City: ") }?.substringAfter("City: ")
-        tvTemp.text = sb.find { it.startsWith("Temperature: ") }?.substringAfter("Temperature: ")
-        tvWeather.text = sb.find { it.startsWith("Weather: ") }?.substringAfter("Weather: ")
-        tvDesc.text = sb.find { it.startsWith("Description: ") }?.substringAfter("Description: ")
+    private fun updateWeatherUI(wl: List<String>) {
+        for (l in wl) {
+            if (l.startsWith("City: ")) {
+                tvCity.text = l.substringAfter("City: ")
+            } else if (l.startsWith("Temperature: ")) {
+                tvTemp.text = l.substringAfter("Temperature: ")
+            } else if (l.startsWith("Weather: ")) {
+                tvWeather.text = l.substringAfter("Weather: ")
+            } else if (l.startsWith("Description: ")) {
+                tvDesc.text = l.substringAfter("Description: ")
+            }
+        }
     }
 
-    private fun updateBackground(sb: List<String>) {
-        val timezone = sb.find { it.startsWith("Timezone: ") }?.substringAfter("Timezone: ")?.toDouble() ?: 0.0
-        val hour = (Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.HOUR_OF_DAY) + (timezone / 3600).toInt() + 24) % 24
-        rl.background = ContextCompat.getDrawable(this, when(hour) {
-            in 5..11 -> R.drawable.morning
-            in 12..16 -> R.drawable.afternoon
-            in 17..20 -> R.drawable.evening
-            else -> R.drawable.night
-        })
+    private fun updateBackground(wl: List<String>) {
+        var tz = 0.0
+        for (l in wl) {
+            if (l.startsWith("Timezone: ")) {
+                tz = l.substringAfter("Timezone: ").toDoubleOrNull() ?: 0.0
+                break
+            }
+        }
+        val c = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        val h = (c.get(Calendar.HOUR_OF_DAY) + (tz / 3600).toInt() + 24) % 24
+        val br = if (h in 5..11) {
+            R.drawable.morning
+        } else if (h in 12..16) {
+            R.drawable.afternoon
+        } else if (h in 17..20) {
+            R.drawable.evening
+        } else {
+            R.drawable.night
+        }
+        rl.background = ContextCompat.getDrawable(this, br)
     }
 
-    private fun updateWeatherIcon(sb: List<String>) {
-        sb.find { it.startsWith("Icon: ") }?.substringAfter("Icon: ")?.let {
-            Glide.with(this).load("$iconUrl$it.png").into(imgWeather)
-        } ?: Glide.with(this).load(ContextCompat.getDrawable(this, R.drawable.blank)).into(imgWeather)
+    private fun updateWeatherIcon(wl: List<String>) {
+        var ic: String? = null
+        for (l in wl) {
+            if (l.startsWith("Icon: ")) {
+                ic = l.substringAfter("Icon: ")
+                break
+            }
+        }
+        if (ic != null) {
+            Glide.with(this).load("$iUrl$ic.png").into(imgWeather)
+        } else {
+            Glide.with(this)
+                .load(ContextCompat.getDrawable(this, R.drawable.blank))
+                .into(imgWeather)
+        }
     }
 
-    private fun parseCityName(info: String) = info.split("\n")
-        .find { it.startsWith("City: ") }
-        ?.substringAfter("City: ")
-        ?.trim() ?: ""
+    private fun parseCityName(i: String): String {
+        for (l in i.split("\n")) {
+            if (l.startsWith("City: ")) {
+                return l.substringAfter("City: ").trim()
+            }
+        }
+        return ""
+    }
 
-    private fun storeCityInFirebase(city: String) {
-        FirebaseDatabase.getInstance().getReference("searched_cities").push().key?.let {
-            FirebaseDatabase.getInstance().getReference("searched_cities").child(it).setValue(city)
+    private fun storeCityInFirebase(c: String) {
+        val db = FirebaseDatabase.getInstance()
+        val r = db.getReference("searched_cities")
+        val k = r.push().key
+        if (k != null) {
+            r.child(k).setValue(c)
         }
     }
 
